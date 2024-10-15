@@ -1,0 +1,14 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "node main.js && echo 'write to ../src/components/db.json'"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "xml2js": "^0.6.2"
+  }
+}
