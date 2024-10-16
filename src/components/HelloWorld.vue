@@ -35,59 +35,89 @@
   import db from './db.json'
 
   interface PlayableContent {
-    title: string
-    link: string
+    title: string;
+    link: string;
   }
 
-  interface WeekContent {
-    key: string[]
-    array: any
+  interface WeeklyContents {
+    [key: string]: PlayableContent[];
+  }
+
+  interface MessageContents {
+    [key: string]: {
+      weekList: string[];
+      weeklyContents: WeeklyContents;
+    };
+  }
+
+  interface YearContents {
+    [key: string]: {
+      messageList: string[];
+      messageContents: MessageContents;
+    };
+  }
+
+  interface DB {
+    yearList: string[];
+    yearContents: YearContents;
   }
 
   export default defineComponent({
     name: 'AudioPlayerComponent',
     data () {
       return {
+        db: {} as DB,
         selectedYear: '',
         years: [] as string[],
         messages: [] as string[],
         selectedMessage: '',
-        weekContent: {} as WeekContent,
         playableContents: [] as PlayableContent[],
-        trainings: [] as string[],
-        trainingData: {} as Record<string, any>,
         weeks: [] as string[],
-        audioFiles: [] as { title: string; uri: string }[],
-        selectedTraining: '',
         selectedWeek: '',
       }
     },
     mounted () {
-      this.years = db.yearList
+      this.db = db
+      this.years = this.db.yearList
       this.selectedYear = this.years[0]
-      this.onYearChange()
+
+      const previousYear = localStorage.getItem('selectedYear')
+      const previousMessage = localStorage.getItem('selectedMessage')
+      const previousWeek = localStorage.getItem('selectedWeek')
+      if (previousYear && previousMessage && previousWeek) {
+        this.selectedYear = previousYear
+        this.onYearChange()
+        this.selectedMessage = previousMessage
+        this.onMessageChange()
+        this.selectedWeek = previousWeek
+        this.onWeekChange()
+      } else {
+        this.onYearChange()
+      }
     },
     methods: {
       onYearChange () {
-        this.messages = db.yearContents[this.selectedYear].messageList
+        localStorage.setItem('selectedYear', this.selectedYear)
+        this.messages = this.db.yearContents[this.selectedYear].messageList
         this.selectedMessage = this.messages[0]
         this.onMessageChange()
       },
       onMessageChange () {
-        this.weeks = db.yearContents[this.selectedYear].messageContents[this.selectedMessage].weekList
+        localStorage.setItem('selectedMessage', this.selectedMessage)
+        this.weeks = this.db.yearContents[this.selectedYear].messageContents[this.selectedMessage].weekList
         this.selectedWeek = this.weeks[0]
 
         this.onWeekChange()
       },
       onWeekChange () {
-        const yearlyContent = db.yearContents[this.selectedYear]
-        this.playableContents = yearlyContent
+        localStorage.setItem('selectedWeek', this.selectedWeek)
+        this.playableContents = this.db.yearContents[this.selectedYear]
           .messageContents[this.selectedMessage]
           .weeklyContents[this.selectedWeek]
       },
       playAudio (uri: string) {
         // open uri in new tab
-        window.open(uri, '_blank')
+        window.location.href = './play?file=' + uri
       },
     },
   })

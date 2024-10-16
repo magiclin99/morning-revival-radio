@@ -65,9 +65,14 @@ function buildWeekContent (dataList) {
   }
 
   return dataList.flatMap((value, index) => {
+    const title = value.string[0].substr(4)
+    const link = value.string[1]
+      .substr(4)
+      .replace('SERVERIP2', 'ezoecloud.twgbr.org')
+      .replace('http', 'https')
     return {
-      title: value.string[0].substr(4),
-      link: value.string[1].substr(4).replace('SERVERIP2', 'ezoecloud.twgbr.org'),
+      title: title,
+      link: link,
     }
   })
 }
