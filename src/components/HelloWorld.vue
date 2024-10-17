@@ -21,7 +21,7 @@
 
     <v-list lines="two">
       <div v-for="(audio, index) in playableContents" :key="index">
-        <v-list-item @click="playAudio(audio.link)">
+        <v-list-item @click="playAudio(audio.link, audio.title)">
           <v-list-item-content>{{ audio.title }}</v-list-item-content>
         </v-list-item>
         <v-divider />
@@ -115,9 +115,9 @@
           .messageContents[this.selectedMessage]
           .weeklyContents[this.selectedWeek]
       },
-      playAudio (uri: string) {
+      playAudio (uri: string, title: string) {
         // open uri in new tab
-        window.location.href = './play?file=' + uri
+        window.location.href = `./play?file=${uri}&msgTitle=${this.selectedWeek}&fileTitle=${title}`
       },
     },
   })

@@ -1,16 +1,36 @@
 <template>
   <v-container
-    class="fill-height align-center justify-center "
-    style="background-color: #000000"
+    class="fill-height align-center justify-center"
   >
-    <video
-      ref="videoPlayer"
-      :controls="true"
-      height="50px"
-      preload="metadata"
-      :src="filePath"
-      width="100%"
-    />
+    <v-container>
+      <v-row class="align-center justify-center">
+        <div class="text-h4 text-center">{{ $route.query.msgTitle }}</div>
+      </v-row>
+      <v-row class="align-center justify-center mt-16">
+        <div class="text-h6 text-center">{{ $route.query.fileTitle }}</div>
+      </v-row>
+      <v-row class="mt-10">
+        <video
+          ref="videoPlayer"
+          :controls="true"
+          height="50px"
+          preload="metadata"
+          :src="filePath"
+          width="100%"
+        />
+      </v-row>
+      <v-row class="mt-10 align-center justify-center">
+        <v-btn-group
+          divided
+          variant="outlined"
+        >
+          <v-btn icon="mdi-rewind-5" @click="() => move(-5)" />
+          <v-btn icon="mdi-rewind-10" @click="() => move(-10)" />
+          <v-btn icon="mdi-fast-forward-10" @click="() => move(5)" />
+          <v-btn icon="mdi-fast-forward-5" @click="() => move(10)" />
+        </v-btn-group>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
@@ -39,6 +59,12 @@
         const value = (e.target as HTMLVideoElement).currentTime
         localStorage.setItem(key, value.toString())
       })
+    },
+    methods: {
+      move (time: number) {
+        const videoPlayer = this.$refs.videoPlayer as HTMLVideoElement
+        videoPlayer.currentTime += time
+      },
     },
   })
 </script>
