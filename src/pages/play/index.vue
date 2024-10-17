@@ -24,10 +24,10 @@
           divided
           variant="outlined"
         >
-          <v-btn icon="mdi-rewind-5" @click="() => move(-5)" />
           <v-btn icon="mdi-rewind-10" @click="() => move(-10)" />
-          <v-btn icon="mdi-fast-forward-10" @click="() => move(5)" />
-          <v-btn icon="mdi-fast-forward-5" @click="() => move(10)" />
+          <v-btn icon="mdi-rewind-5" @click="() => move(-5)" />
+          <v-btn icon="mdi-fast-forward-5" @click="() => move(5)" />
+          <v-btn icon="mdi-fast-forward-10" @click="() => move(10)" />
         </v-btn-group>
       </v-row>
     </v-container>
