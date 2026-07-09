@@ -1,0 +1,65 @@
+name: Daily content update & deploy
+
+# Fully automates the /update flow: refresh the audio catalog, rebuild the db,
+# build the web bundle, and publish to GitHub Pages. Runs every day and can also
+# be triggered manually from the Actions tab.
+on:
+  schedule:
+    # 02:00 Taiwan (UTC+8) == 18:00 UTC. Scheduled runs only fire from the
+    # default branch (main), so this file must be merged to main to take effect.
+    - cron: '0 18 * * *'
+  workflow_dispatch: {}
+
+# Permissions required to publish to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two Pages deploys at once.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      # Downloads the newest upstream plist and rebuilds src/components/db.json.
+      # The db is a build-time artifact only — it is never committed back.
+      - name: Refresh content (download plist -> rebuild db.json)
+        run: bash .claude/skills/update/update-db.sh
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+
+      - name: Build web bundle
+        run: yarn build
+
+      # The app uses history-mode routing (/, /play). GitHub Pages has no server
+      # rewrites, so serve index.html for unknown paths via a 404.html copy.
+      - name: SPA fallback (404.html)
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

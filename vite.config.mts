@@ -12,7 +12,10 @@ import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // GitHub Pages serves the site under /<repo-name>/. Use the subpath for the
+  // production build (`vite build`) and keep the root path for local dev.
+  base: command === 'build' ? '/morning-revival-radio/' : '/',
   plugins: [
     VueRouter({
       dts: 'src/typed-router.d.ts',
@@ -71,4 +74,4 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-})
+}))
