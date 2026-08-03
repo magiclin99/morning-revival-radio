@@ -1,5 +1,16 @@
 <template>
   <v-container>
+    <div class="d-flex justify-end mb-2">
+      <v-chip
+        color="green"
+        prepend-icon="mdi-account-multiple"
+        size="small"
+        variant="tonal"
+      >
+        同時在線 {{ onlineCount }} 人
+      </v-chip>
+    </div>
+
     <v-select
       v-model="selectedYear"
       :items="years"
@@ -33,6 +44,7 @@
 <script lang="ts">
   import { defineComponent } from 'vue'
   import db from './db.json'
+  import { usePresence } from '@/composables/usePresence'
 
   interface PlayableContent {
     title: string;
@@ -64,6 +76,10 @@
 
   export default defineComponent({
     name: 'AudioPlayerComponent',
+    setup () {
+      const { onlineCount } = usePresence()
+      return { onlineCount }
+    },
     data () {
       return {
         db: {} as DB,
