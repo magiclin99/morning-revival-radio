@@ -3,11 +3,11 @@
     <div class="d-flex justify-end mb-2">
       <v-chip
         color="green"
-        prepend-icon="mdi-account-multiple"
+        prepend-icon="mdi-headphones"
         size="small"
         variant="tonal"
       >
-        同時在線 {{ onlineCount }} 人
+        同時收聽 {{ listenerCount }} 人
       </v-chip>
     </div>
 
@@ -77,8 +77,9 @@
   export default defineComponent({
     name: 'AudioPlayerComponent',
     setup () {
-      const { onlineCount } = usePresence()
-      return { onlineCount }
+      // Browse page only observes the count; it does not register as a listener.
+      const { listenerCount } = usePresence()
+      return { listenerCount }
     },
     data () {
       return {

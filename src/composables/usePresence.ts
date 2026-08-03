@@ -11,30 +11,35 @@ import {
 import { database } from '@/firebase'
 
 /**
- * Tracks the number of clients currently connected.
+ * Tracks how many clients are currently listening.
  *
- * Each browser tab registers itself under `/presence/{id}` on mount and asks
- * Firebase to remove that entry automatically when the connection drops
- * (`onDisconnect`). The online count is simply the number of children under
- * `/presence`.
+ * A client only counts as a listener when `register` is true (the playback
+ * page). It registers itself under `/listeners/{id}` and asks Firebase to
+ * remove that entry automatically when the connection drops
+ * (`onDisconnect`). Every caller — listener or not — observes the live count,
+ * which is the number of children under `/listeners`. So the browse page can
+ * show the count without inflating it.
  */
-export function usePresence () {
-  const onlineCount = ref(0)
-  const presenceRef = dbRef(database, 'presence')
-  const myRef = push(presenceRef)
+export function usePresence ({ register = false } = {}) {
+  const listenerCount = ref(0)
+  const listenersRef = dbRef(database, 'listeners')
 
-  set(myRef, serverTimestamp())
-  onDisconnect(myRef).remove()
+  let myRef: ReturnType<typeof push> | null = null
+  if (register) {
+    myRef = push(listenersRef)
+    set(myRef, serverTimestamp())
+    onDisconnect(myRef).remove()
+  }
 
-  const unsubscribe = onValue(presenceRef, snapshot => {
-    onlineCount.value = snapshot.size
+  const unsubscribe = onValue(listenersRef, snapshot => {
+    listenerCount.value = snapshot.size
   })
 
   onUnmounted(() => {
     unsubscribe()
     // Best-effort cleanup for SPA navigation; onDisconnect covers tab close.
-    remove(myRef)
+    if (myRef) remove(myRef)
   })
 
-  return { onlineCount }
+  return { listenerCount }
 }
