@@ -12,12 +12,24 @@
       @update:model-value="onMessageChange"
     />
 
-    <v-select
-      v-model="selectedWeek"
-      :items="weeks"
-      label="Select Week"
-      @update:model-value="onWeekChange"
-    />
+    <div class="d-flex align-start ga-2">
+      <v-select
+        v-model="selectedWeek"
+        class="flex-grow-1"
+        :items="weeks"
+        label="Select Week"
+        style="min-width: 0"
+        @update:model-value="onWeekChange"
+      />
+      <v-btn
+        v-if="outlineUrl"
+        height="56"
+        :href="outlineUrl"
+        prepend-icon="mdi-text-box-outline"
+        size="large"
+        variant="tonal"
+      >綱要</v-btn>
+    </div>
 
     <v-list lines="two">
       <div v-for="(audio, index) in playableContents" :key="index">
@@ -74,9 +86,26 @@
         playableContents: [] as PlayableContent[],
         weeks: [] as string[],
         selectedWeek: '',
+        outlines: {} as Record<string, string>,
       }
     },
+    computed: {
+      // 用音檔路徑（如 2026/5-Fall-Elders/week1）查 public/outlines/index.json；週標題的用字和綱要網頁不一致，不能拿來比對
+      outlineUrl (): string {
+        for (const { link } of this.playableContents ?? []) {
+          const m = link.match(/7-Morning_Revival\/(\d{4}\/[^/]+)\/week(\d+)/)
+          const path = m && this.outlines[`${m[1]}/week${m[2]}`]
+          if (path) return import.meta.env.BASE_URL + path
+        }
+        return ''
+      },
+    },
     mounted () {
+      fetch(import.meta.env.BASE_URL + 'outlines/index.json')
+        .then(res => res.ok ? res.json() : {})
+        .then(outlines => { this.outlines = outlines })
+        .catch(() => {})
+
       this.db = db
       this.years = this.db.yearList
       this.selectedYear = this.years[0]
