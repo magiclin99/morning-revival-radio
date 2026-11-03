@@ -104,7 +104,7 @@ python3 -I .claude/skills/outline-page/build.py build <週.md> <refs.txt> \
 
 ### 6. 上線
 
-commit `public/outlines/`，合進 main。每天的 Action（台灣時間 02:00）會一起部署，不用改 workflow；要馬上上線就用 `update` skill 手動觸發。
+commit `public/outlines/`，合進 main。`public/outlines/` 有變動的 push 會自動觸發部署，合併後幾分鐘就上線，不用另外跑 `update`。
 
 ---
 
