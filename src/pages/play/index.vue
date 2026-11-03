@@ -4,6 +4,16 @@
   >
     <v-container>
       <v-row class="align-center justify-center">
+        <v-chip
+          color="green"
+          prepend-icon="mdi-headphones"
+          size="small"
+          variant="tonal"
+        >
+          同時收聽 {{ listenerCount }} 人
+        </v-chip>
+      </v-row>
+      <v-row class="align-center justify-center mt-6">
         <div class="text-h4 text-center">{{ $route.query.msgTitle }}</div>
       </v-row>
       <v-row class="align-center justify-center mt-16">
@@ -36,9 +46,15 @@
 
 <script lang="ts">
   import { defineComponent } from 'vue'
+  import { usePresence } from '@/composables/usePresence'
 
   export default defineComponent({
     name: 'Player',
+    setup () {
+      // On the playback page this client counts as an active listener.
+      const { listenerCount } = usePresence({ register: true })
+      return { listenerCount }
+    },
     data () {
       return {
         filePath: {} as string,
