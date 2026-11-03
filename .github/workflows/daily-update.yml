@@ -1,20 +1,20 @@
 name: Daily content update & deploy
 
 # Fully automates the /update flow: refresh the audio catalog, rebuild the db,
-# build the web bundle, and publish to GitHub Pages. Runs every day, whenever an
-# outline page is merged to main, and can also be triggered manually from the
+# build the web bundle, and publish to GitHub Pages. Runs every day, whenever site
+# files are merged to main, and can also be triggered manually from the
 # Actions tab.
 on:
   schedule:
     # 02:00 Taiwan (UTC+8) == 18:00 UTC. Scheduled runs only fire from the
     # default branch (main), so this file must be merged to main to take effect.
     - cron: '0 18 * * *'
-  # Publish outline pages as soon as they are merged, instead of waiting for the
-  # daily run (scheduled runs are often delayed by hours). Changes to this
-  # workflow also deploy, so a fix takes effect right away.
+  # Publish site changes (outline pages, app code) as soon as they are merged,
+  # instead of waiting for the daily run (scheduled runs are often delayed by
+  # hours). Changes to this workflow also deploy, so a fix takes effect right away.
   push:
     branches: [main]
-    paths: ['public/outlines/**', '.github/workflows/daily-update.yml']
+    paths: ['public/**', 'src/**', '.github/workflows/daily-update.yml']
   workflow_dispatch: {}
 
 # Permissions required to publish to GitHub Pages.
