@@ -101,7 +101,8 @@
       },
     },
     mounted () {
-      fetch(import.meta.env.BASE_URL + 'outlines/index.json')
+      // Pages 讓瀏覽器快取 10 分鐘；no-cache 每次用 ETag 重新確認，剛部署的綱要纔會馬上出現
+      fetch(import.meta.env.BASE_URL + 'outlines/index.json', { cache: 'no-cache' })
         .then(res => res.ok ? res.json() : {})
         .then(outlines => { this.outlines = outlines })
         .catch(() => {})
